@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olive Young | Research Specialist Portfolio</title>
+    <!-- 프리텐다드 폰트 적용 (올리브영의 볼드하고 트렌디한 서체 환경을 재현) -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <style>
+        :root {
+            --oy-green: #96c31d;
+            --oy-green-light: #f6faec;
+            --oy-coral: #ff5475;
+            --oy-coral-light: #fff5f6;
+            --text-dark: #0f172a;
+            --text-medium: #334155;
+            --text-gray: #64748b;
+            --bg-light: #ffffff;
+            --transition-smooth: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: "Pretendard Variable", Pretendard, -apple-system, sans-serif;
+            letter-spacing: -0.02em; /* 세련되고 정갈한 자간 비율 적용 */
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow: hidden; /* 마우스/키보드 스크롤을 완전 수동 제어하기 위해 기본 스크롤 차단 */
+        }
+
+        /* 슬라이드 전송 컨테이너 */
+        .presentation-container {
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            overflow: hidden; /* 부모 단위에서의 스크롤 방지 */
+        }
+
+        /* 개별 슬라이드: 내부 스크롤이 자연스럽게 발생할 수 있도록 설정 */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 스크롤 시 상단 기준 정렬 */
+            padding: 90px 8% 90px 8%; /* 상하 여백을 컴팩트하고 넉넉하게 확장 */
+            background-color: var(--bg-light);
+            overflow-y: auto; /* 내부 콘텐츠가 많을 때 자연스럽게 내부 스크롤 생성 */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.6s;
+            z-index: 1;
+            scroll-behavior: smooth;
+        }
+
+        /* 정중앙 정렬형 슬라이드 (표지 및 피날레 슬라이드 레이아웃 붕괴 방지용 특화 클래스) */
+        .slide.slide-center {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            text-align: center !important;
+            padding: 40px 8% !important;
+            height: 100% !important;
+            width: 100% !important;
+            overflow: hidden !important; /* 표지와 마지막장은 스크롤 불필요 */
+        }
+
+        /* 활성화된 슬라이드 상태 정의 */
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            z-index: 10;
+        }
+
+        /* 은은하게 스며드는 올리브영 특유의 원형 그라디언트 데코 */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            right: -5%;
+            width: 35%;
+            height: 45%;
+            background: radial-gradient(circle, rgba(150, 195, 29, 0.04) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .slide::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: -5%;
+            width: 35%;
+            height: 45%;
+            background: radial-gradient(circle, rgba(255, 84, 117, 0.03) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 표지 전용 올리브영 무드 글로우 데코 스타일 */
+        .cover-glow-green {
+            position: absolute;
+            top: -15%;
+            left: -10%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(150, 195, 29, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .cover-glow-coral {
+            position: absolute;
+            bottom: -15%;
+            right: -10%;
+            width: 550px;
+            height: 550px;
+            background: radial-gradient(circle, rgba(255, 84, 117, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .cover-brand-symbol {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 480px;
+            height: 480px;
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(8px);
+        }
+
+        /* 마우스 스크롤 힌트 애니메이션 및 글로우 */
+        .scroll-hint {
+            position: absolute;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 10;
+        }
+        .scroll-hint span {
+            font-weight: 400;
+            font-size: 11.5px;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-top: 4px;
+            animation: text-glow 2s infinite alternate;
+        }
+        @keyframes text-glow {
+            0% {
+                color: var(--text-gray);
+                text-shadow: 0 0 0px transparent;
+            }
+            100% {
+                color: var(--oy-green);
+                text-shadow: 0 0 8px rgba(150, 195, 29, 0.6);
+            }
+        }
+        /* 마우스 스크롤 아이콘 시각화 */
+        .mouse {
+            width: 20px;
+            height: 32px;
+            border: 2px solid var(--text-gray);
+            border-radius: 12px;
+            position: relative;
+            animation: mouse-glow 2s infinite alternate;
+        }
+        .wheel {
+            width: 4px;
+            height: 8px;
+            background-color: var(--oy-coral);
+            border-radius: 2px;
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: scroll-wheel 1.6s infinite;
+        }
+        @keyframes scroll-wheel {
+            0% { top: 6px; opacity: 1; }
+            100% { top: 16px; opacity: 0; }
+        }
+        @keyframes mouse-glow {
+            0% { border-color: var(--text-gray); }
+            100% { border-color: var(--oy-green); box-shadow: 0 0 6px rgba(150, 195, 29, 0.4); }
+        }
+
+        /* 상단 네비게이션 프로그레스 바 */
+        .progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background-color: #f1f5f9;
+            z-index: 100;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 11.11%; /* 9개 슬라이드 기준 초기값 */
+            background: linear-gradient(90deg, var(--oy-green) 0%, var(--oy-coral) 100%);
+            transition: var(--transition-smooth);
+        }
+
+        /* 우측 인디케이터 점 */
+        .indicator-dots {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 99;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 2px solid transparent;
+        }
+
+        .dot.active {
+            background-color: var(--oy-green);
+            transform: scale(1.4);
+            border-color: #ffffff;
+            box-shadow: 0 0 0 2px var(--oy-green);
+        }
+
+        /* 내부 콘텐츠 텍스트 / 카드 페이드인 애니메이션 */
+        .animate-up {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .active .animate-up {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* 좌우 분할 그리드 기본 레이아웃 (우측 영역 가로폭 최대 확장 및 반응형 적용) */
+        .slide-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 60px;
+            width: 100%;
+            max-width: 1440px; /* 더 시원하고 넓은 최대 가로폭 보장 */
+            align-items: start;
+            z-index: 2;
+            padding: 20px 0;
+        }
+
+        .side-headline {
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+        }
+
+        .num-badge {
+            font-size: 13.5px;
+            font-weight: 600; /* 세련되게 볼드체 하향 */
+            color: var(--oy-coral);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 38px; /* 너무 투박하게 크지 않은 세련된 38px로 통일 */
+            font-weight: 700; /* 세련된 700 볼드로 가볍고 열린 타이포 적용 */
+            line-height: 1.35;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+            word-break: keep-all;
+        }
+
+        .section-desc {
+            font-size: 16.5px; /* 본문 스캔 피로도 감소를 위한 가독성 중심 크기 최적화 */
+            color: var(--text-gray);
+            font-weight: 400; /* 설명글은 우아한 레귤러로 무게감 완화 */
+            line-height: 1.7;
+            word-break: keep-all;
+        }
+
+        /* ==================== 01 ABOUT ME (세로 성장 타임라인 및 뱃지 스타일 튜닝) ==================== */
+        .aboutme-main-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 32px; /* 정보 밀집도 완화를 위해 세로 간격 조정 */
+            width: 100%;
+        }
+        .timeline-container {
+            position: relative;
+            padding-left: 28px;
+            margin-top: 10px;
+            border-left: 2px solid var(--oy-green);
+            display: flex;
+            flex-direction: column;
+            gap: 40px; /* 타임라인 항목 간 간격 조정으로 시각적 밸런스 쾌적화 */
+        }
+        .timeline-item {
+            position: relative;
+        }
+        .timeline-badge {
+            position: absolute;
+            left: -37px; /* -28px offset - 9px (half of 18px circle) = -37px */
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 3px solid var(--oy-green);
+            transition: var(--transition-smooth);
+            z-index: 2;
+        }
+        .timeline-item:nth-child(1) .timeline-badge {
+            border-color: var(--oy-green);
+        }
+        .timeline-item:nth-child(1):hover .timeline-badge {
+            background-color: var(--oy-green);
+        }
+        .timeline-item:nth-child(2) .timeline-badge {
+            border-color: var(--oy-coral);
+        }
+        .timeline-item:nth-child(2):hover .timeline-badge {
+            background-color: var(--oy-coral);
+        }
+        .timeline-item:nth-child(3) .timeline-badge {
+            border-color: var(--text-dark);
+        }
+        .timeline-item:nth-child(3):hover .timeline-badge {
+            background-color: var(--text-dark);
+        }
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .timeline-title {
+            font-size: 20px; /* 제목 시인성 최적화 */
+            font-weight: 600; /* 깔끔하고 신뢰감 높은 600 세미볼드 */
+            color: var(--text-dark);
+        }
+        .timeline-desc {
+            font-size: 16.5px; /* 가독성 및 세련됨 조율 */
+            color: var(--text-medium);
+            font-weight: 400; /* 본문은 우아하게 레귤러 */
+            line-height: 1.8;
+            word-break: keep-all;
+        }
+
+        /* 1-1. 자기소개 에세이 카드 */
+        .about-intro-hero {
+            background-color: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 20px;
+            padding: 36px; /* 내부 여백 최적화 */
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.02);
+        }
+
+        .about-intro-hero h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        /* 전용 타임라인 뱃지 스타일 정의 (선명한 외곽선과 쾌적한 간격 보정) */
+        .about-snap-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* 뱃지 간 구분도 향상을 위해 간격 확장 */
+            margin-top: 12px;
+        }
+        .pill-green {
+            font-size: 13.5px;
+            font-weight: 500;
+            background-color: var(--oy-green-light) !important;
+            color: var(--oy-green) !important;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(150, 195, 29, 0.4) !important; /* 선명한 테두리 */
+            display: inline-block;
+            transition: var(--transition-smooth);
+        }
+        .pill-green:hover {
+            background-color: rgba(150, 195, 29, 0.1) !important;
+        }
+        .pill-coral {
+            font-size: 13.5px;
+            font-weight: 500;
+            background-color: var(--oy-coral-light) !important;
+            color: var(--oy-coral) !important;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 84, 117, 0.35) !important; /* 선명한 테두리 */
+            display: inline-block;
+            transition: var(--transition-smooth);
+        }
+        .pill-coral:hover {
+            background-color: rgba(255, 84, 117, 0.1) !important;
+        }
+        .pill-dark {
+            font-size: 13.5px;
+            font-weight: 500;
+            background-color: var(--text-dark) !important;
+            color: #ffffff !important;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--text-dark) !important;
+            display: inline-block;
+            transition: var(--transition-smooth);
+        }
+        .pill-dark:hover {
+            background-color: #1e293b !important;
+        }
+
+        /* ==================== Case Study Common ==================== */
+        .case-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+        .case-card {
+            background-color: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 20px;
+            padding: 28px 36px; /* 카드 여백 조율 */
+            display: grid;
+            grid-template-columns: 120px 1fr; /* 더 시원하게 분할 */
+            gap: 24px;
+            transition: var(--transition-smooth);
+        }
+        .case-card:hover { border-color: var(--oy-green); box-shadow: 0 6px 20px rgba(150, 195, 29, 0.02); }
+        .case-tag {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--oy-coral);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        .case-body { display: flex; flex-direction: column; gap: 6px; }
+        .case-heading { font-size: 19px; font-weight: 600; color: var(--text-dark); } /* 설명 제목 크기 조율 */
+        .case-desc { font-size: 16px; color: var(--text-medium); font-weight: 400; line-height: 1.7; word-break: keep-all; } /* 설명 텍스트 크기 조율 */
+
+        /* 세부 카드 2열 그리드 */
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 14px;
+        }
+        .case-sub-card {
+            background-color: var(--oy-green-light);
+            border: 1px solid rgba(150, 195, 29, 0.1);
+            border-radius: 14px;
+            padding: 20px 24px; /* 여백 쾌적화 */
+        }
+        .case-sub-card-title {
+            font-size: 17px; /* 세부 서브 카드 타이틀 조율 */
+            font-weight: 600;
+            color: var(--oy-green);
+            margin-bottom: 8px;
+        }
+        .case-sub-card-desc {
+            font-size: 15.5px; /* 글자 크기 조율 */
+            color: var(--text-medium);
+            font-weight: 400;
+            line-height: 1.65;
+            word-break: keep-all;
+        }
+
+        /* Case 1 (3장) Key Insight & Action 슬라이드용 전용 CSS 데코 (다닥다닥 붙는 현상 완벽 해결) */
+        .case-sub-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px; /* 기존 16px에서 24px로 대폭 넓혀 빽빽함 해소 */
+            margin-top: 18px; /* 위쪽 영역과의 호흡 확장 */
+        }
+        .case-sub-grid-card {
+            background-color: #f8fafc;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            padding: 24px 28px; /* 안쪽 패딩 넓히기 */
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 180px;
+        }
+        .case-sub-grid-card:hover {
+            border-color: var(--oy-green);
+            background-color: #ffffff;
+            box-shadow: 0 10px 30px -10px rgba(150, 195, 29, 0.1);
+        }
+
+        /* 5장 리포트 포트폴리오 전용 와이드 카드 CSS 데코 */
+        .report-portfolio-section {
+            width: 100%;
+            margin-bottom: 24px;
+        }
+        .portfolio-main-heading {
+            font-size: 19px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 18px;
+            padding-left: 12px;
+            border-left: 4px solid var(--oy-green);
+        }
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px; /* 카드간 여백 시원하게 확보 */
+            width: 100%;
+        }
+        .report-card {
+            background-color: #ffffff;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 18px;
+            padding: 32px 28px;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.02);
+        }
+        .report-card:hover {
+            border-color: var(--oy-green);
+            box-shadow: 0 8px 30px rgba(150, 195, 29, 0.04);
+        }
+        .report-period-badge {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--oy-coral);
+            background-color: var(--oy-coral-light);
+            padding: 4px 10px;
+            border-radius: 6px;
+            align-self: flex-start;
+        }
+        .report-card-title {
+            font-size: 18.5px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .report-card-desc {
+            font-size: 15.5px;
+            font-weight: 400;
+            color: var(--text-medium);
+            line-height: 1.65;
+        }
+
+        /* 글로벌 테이블 테두리 및 레이아웃 최적화 적용 */
+        .p6-localization-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 15.5px; /* 본문 테이블 텍스트 크기 추가 최적화 */
+            margin-top: 18px;
+        }
+        .p6-localization-table th {
+            padding: 12px 14px;
+            background-color: var(--oy-green-light);
+            color: var(--text-dark);
+            font-weight: 600;
+            border-bottom: 2px solid var(--oy-green);
+        }
+        .p6-localization-table td {
+            padding: 14px;
+            color: var(--text-medium);
+            border-bottom: 1px solid #e2e8f0;
+            line-height: 1.7; /* 줄간격 확장 */
+            vertical-align: top;
+        }
+        .p6-localization-table tr:hover td {
+            background-color: var(--oy-green-light);
+        }
+
+        /* 표지 전용 텍스트 및 레이아웃 피로도 해소 CSS */
+        .cover-pill-badge {
+            display: inline-block;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--oy-green);
+            background-color: var(--oy-green-light);
+            border: 1px solid rgba(150, 195, 29, 0.25);
+            padding: 5px 14px;
+            border-radius: 30px;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+        .cover-title {
+            font-size: 38px; /* 세련되고 정제된 타이틀 크기 */
+            font-weight: 700;
+            line-height: 1.35;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            word-break: keep-all;
+            letter-spacing: -0.03em;
+        }
+        .cover-meta {
+            font-size: 14.5px;
+            color: var(--text-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            z-index: 10;
+        }
+        .cover-meta .name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .cover-meta .meta-divider {
+            color: #e2e8f0;
+        }
+
+        @media (max-width: 1024px) {
+            .slide-layout { grid-template-columns: 1fr; gap: 32px; }
+            .slide { padding: 60px 24px; }
+            .section-title { font-size: 28px; }
+            .about-capabilities-grid { grid-template-columns: 1fr; }
+            .about-snapshot-board { grid-template-columns: 1fr; }
+            .grid-2-col { grid-template-columns: 1fr; }
+            .report-grid {
+                grid-template-columns: 1fr;
+            }
+            .case-sub-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- 9개의 슬라이드에 부합하도록 인디케이터 점 수량 및 호출 인덱스 조정 (0~8) -->
+    <div class="indicator-dots">
+        <div class="dot active" onclick="scrollToSlide(0)"></div>
+        <div class="dot" onclick="scrollToSlide(1)"></div>
+        <div class="dot" onclick="scrollToSlide(2)"></div>
+        <div class="dot" onclick="scrollToSlide(3)"></div>
+        <div class="dot" onclick="scrollToSlide(4)"></div>
+        <div class="dot" onclick="scrollToSlide(5)"></div>
+        <div class="dot" onclick="scrollToSlide(6)"></div>
+        <div class="dot" onclick="scrollToSlide(7)"></div>
+        <div class="dot" onclick="scrollToSlide(8)"></div>
+    </div>
+
+    <div class="presentation-container" id="presentationContainer">
+
+        <!-- ==================== INTRO COVER (Glow 애니메이션 적용 완료) ==================== -->
+        <section class="slide slide-center active">
+            <!-- 부드럽고 고급스러운 브랜드 글로우 백그라운드 효과 -->
+            <div class="cover-glow-green"></div>
+            <div class="cover-glow-coral"></div>
+            
+            <!-- 올리브영 올리브 & 코랄 듀얼 시그니처 형상 백그라운드 삽입 -->
+            <div class="cover-brand-symbol">
+                <svg viewBox="0 0 200 200" width="100%" height="100%">
+                    <circle cx="85" cy="100" r="45" fill="var(--oy-green)" />
+                    <circle cx="115" cy="100" r="45" fill="var(--oy-coral)" />
+                </svg>
+            </div>
+
+            <div class="intro-content animate-up">
+                <div class="cover-pill-badge">CJ OLIVE YOUNG PORTFOLIO</div>
+                <h1 class="cover-title">
+                    Consumer & Market Insight Portfolio
+                </h1>
+                
+                <div class="cover-meta" style="margin-top: 40px;">
+                    <span class="meta-item name">마경아</span>
+                    <span class="meta-divider">|</span>
+                    <span class="meta-item">010-8280-2599</span>
+                    <span class="meta-divider">|</span>
+                    <span class="meta-item">mka31053@naver.com</span>
+                </div>
+            </div>
+            
+            <div class="scroll-hint">
+                <div class="mouse"><div class="wheel"></div></div>
+                <span>방향키 또는 마우스 휠로 이동</span>
+            </div>
+        </section>
+
+        <!-- ==================== 01 ABOUT ME (하단 Footnote ➔ 프리미엄 메시지 카드로 리모델링 완료) ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">01</span>
+                    <h2 class="section-title">About Me</h2>
+                    <div style="margin-top: 24px; font-size: 14px; color: var(--text-medium); line-height: 1.8; border-top: 1px dashed rgba(150,195,29,0.2); padding-top: 16px;">
+                        <p style="font-weight: 700;">📞 010-8280-2599</p>
+                        <p style="font-weight: 700; margin-top: 4px;">✉️ mka31053@naver.com</p>
+                    </div>
+                </div>
+                
+                <div class="aboutme-main-wrapper animate-up delay-1">
+                    <!-- 1-1. 세로형 커리어 성장 로드맵 타임라인 -->
+                    <div class="about-intro-hero">
+                        <h3 style="margin-bottom: 24px; font-weight: 600;">Professional Journey</h3>
+                        <div class="timeline-container">
+                            <!-- Phase 1 -->
+                            <div class="timeline-item">
+                                <span class="timeline-badge"></span>
+                                <div class="timeline-header">
+                                    <h4 class="timeline-title">Phase 01. 리서치의 시작</h4>
+                                </div>
+                                <p class="timeline-desc">
+                                    소비자 조사 설계 및 운영 경험 축적
+                                </p>
+                                <div class="about-snap-pills">
+                                    <span class="pill-green">정량조사</span>
+                                    <span class="pill-green">트렌드 리포트</span>
+                                    <span class="pill-green">소비자 인사이트</span>
+                                </div>
+                            </div>
+                            <!-- Phase 2 -->
+                            <div class="timeline-item">
+                                <span class="timeline-badge"></span>
+                                <div class="timeline-header">
+                                    <h4 class="timeline-title">Phase 02. 분석의 확장</h4>
+                                </div>
+                                <p class="timeline-desc">
+                                    행동 데이터 기반 고객 분석 확장
+                                </p>
+                                <div class="about-snap-pills">
+                                    <span class="pill-coral">Mobile DMP</span>
+                                    <span class="pill-coral">세그먼트 분석</span>
+                                    <span class="pill-coral">캠페인 전략 제안</span>
+                                    <span class="pill-coral">트렌드 리포트</span>
+                                </div>
+                            </div>
+                            <!-- Phase 3 -->
+                            <div class="timeline-item">
+                                <span class="timeline-badge"></span>
+                                <div class="timeline-header">
+                                    <h4 class="timeline-title">Phase 03. 비즈니스 방향성 도출</h4>
+                                </div>
+                                <p class="timeline-desc">
+                                    소비자 조사와 행동 데이터를 기반으로 인사이트를 구조화하고 비즈니스 전략으로 연결
+                                </p>
+                                <div class="about-snap-pills">
+                                    <span class="pill-dark">비즈니스 인사이트</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1-2. 하단 핵심 비전 메시지 카드 (가벼운 각주 형태에서 프리미엄 올리브영 무드의 세련된 콜아웃 박스로 전면 개편) -->
+                    <div class="about-footer-slogan" style="margin-top: 24px; padding: 22px 26px; background: linear-gradient(135deg, var(--oy-green-light) 0%, rgba(255, 255, 255, 0.95) 100%); border-left: 4px solid var(--oy-green); border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(150, 195, 29, 0.12); width: 100%; display: flex; flex-direction: column; gap: 8px;">
+                        <span class="about-slogan-left" style="font-size: 13px; color: var(--oy-green); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">Consumer Research × Behavior Data × Market Insight</span>
+                        <p class="about-slogan-desc" style="font-size: 15.5px; color: var(--text-dark); font-weight: 500; line-height: 1.7; word-break: keep-all; margin: 0;">소비자 조사, 행동 데이터, 정기 리포트 경험을 바탕으로 고객·시장 관점의 인사이트를 도출합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 02 CASE 1 ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">02</span>
+                    <h2 class="section-title">Case 1 — E-commerce Customer Analysis</h2>
+                    <p class="section-desc">행동 데이터를 기반으로 신규 고객 확보 가설을 검증하고 데이터 기반 타겟팅 전략 제안</p>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    
+                    <!-- Business Issue -->
+                    <div class="case-card">
+                        <div class="case-tag">Business Issue</div>
+                        <div class="case-body">
+                            <h3 class="case-heading">이커머스 앱 신규 고객 확보</h3>
+                        </div>
+                    </div>
+                    
+                    <!-- Hypothesis -->
+                    <div class="case-card">
+                        <div class="case-tag">Hypothesis</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8;">
+                                그룹사 내 타 서비스 이용 경험을 보유한 고객은 브랜드 친숙도와 서비스 경험이 축적되어 있어, 일반 커머스 고객 대비 더 높은 이용성과 유지 행동을 보일 것이라는 가설 수립
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Design -->
+                    <div class="case-card">
+                        <div class="case-tag" style="color: var(--oy-green); border-color: rgba(150, 195, 29, 0.2);">Analysis Design</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8;">
+                                대상 앱 신규 설치 고객을 계열사 서비스 이용 여부로 세그먼트를 나누어 앱 이용 데이터를 비교 분석함<br>
+                                
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Key Finding -->
+                    <div class="case-card">
+                        <div class="dot-active" style="display:none;"></div>
+                        <div class="case-tag">Key Finding</div>
+                        <div class="case-body">
+                            <h3 class="case-heading" style="margin-bottom: 8px;">데이터 기반 가설 검증 결과</h3>
+                            <div class="grid-2-col" style="grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 14px;">
+                                <!-- 신규 설치 고객 분석 -->
+                                <div class="case-sub-card" style="background-color: var(--oy-coral-light); border: 1px solid rgba(255, 84, 117, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-coral); font-size: 18px; margin-bottom: 10px;">신규 설치 고객 분석</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 15.5px; line-height: 1.7; color: var(--text-medium);">
+                                        기존 계열사 앱 이용 고객은 대상 앱 신규 설치 이후 <strong>평균 이용 시간이 약 2배 높게</strong> 나타남<br><br>
+                                        <span style="color: var(--text-dark); font-weight: 500;">➔ 기존 서비스 경험이 신규 고객의 초기 정착 및 이용 활성화에 영향을 줄 가능성 확인</span>
+                                    </p>
+                                </div>
+                                <!-- 코어 고객 분석 -->
+                                <div class="case-sub-card" style="background-color: var(--oy-green-light); border: 1px solid rgba(150, 195, 29, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-green); font-size: 18px; margin-bottom: 10px;">코어 고객 분석</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 15.5px; line-height: 1.7; color: var(--text-medium);">
+                                        대상 앱 신규 설치 고객은 일반 커머스 앱 이용 고객 대비 <strong>계열사 앱 설치 개수가 약 1.5배 높게</strong> 나타남<br><br>
+                                        또한 대상 앱 코어 고객(이용성 상위 20%) 은 일반 커머스 앱 이용 고객과 비교했을 때 계열사 앱 설치 수준이 더욱 높게 나타남<br><br>
+                                        <span style="color: var(--text-dark); font-weight: 500;">➔ 그룹 내 타 서비스 경험과 고객 충성도 형성 간 연관성 확인</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Insight -->
+                    <div class="case-card">
+                        <div class="case-tag">Business Insight</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8;">
+                                계열사 앱 사용 유저를 고잠재고객군으로 정의하여, 앱을 지속적으로 사용할 가능성이 높은 신규 고객 타겟으로 도출함
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Impact -->
+                    <div class="case-card">
+                        <div class="case-tag" style="color: var(--text-dark); border-color: #cbd5e1;">Impact</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8;">
+                                해당 분석 결과는 캠페인 핵심 전략으로 반영되어 데이터 기반 고객 확보 전략 수립 및 제안 수주에 기여
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 03 CASE 2 ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">03</span>
+                    <h2 class="section-title">Case 2 — Consumer Research & Topic Discovery</h2>
+                    <p class="section-desc">대규모 소비자 조사 프로젝트 진행 및 세그먼트 인사이트 리포트 기획·제작</p>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    
+                    <!-- Background -->
+                    <div class="case-card">
+                        <div class="case-tag">Background</div>
+                        <div class="case-body">
+                            <p class="case-desc">
+                                시장·소비자 행동 이해를 위한 기초 데이터 구축을 목표로<br>국내 모바일 게임 유저 1,000명 규모 정량 조사 프로젝트 수행
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Topic Discovery -->
+                    <div class="case-card">
+                        <div class="case-tag">Topic Discovery</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="margin-bottom: 12px;">
+                                대규모 조사 데이터를 분석하는 과정에서, 단순 연령 비교보다 생활 패턴 차이가 소비 행동에 영향을 미칠 수 있음에 주목함
+                            </p>
+                            <p class="case-desc" style="font-weight: 500; color: var(--text-dark);">
+                                이에 따라 별도 주제를 제안하고, <strong>「라이프스타일 기반 소비자 세그먼트 분석」</strong> 서브 리포트를 기획·작성
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Research Hypothesis -->
+                    <div class="case-card">
+                        <div class="case-tag">Hypothesis</div>
+                        <div class="case-body">
+                            <p class="case-desc">
+                                생활 패턴, 소비 환경, 사회적 관계 차이에 따라 게임 이용 행동과 소비 방식에도 차이가 나타날 것이라는 가설 수립
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Key Insight -->
+                    <div class="case-card">
+                        <div class="case-tag">Key Insight</div>
+                        <div class="case-body">
+                            <div class="grid-2-col" style="grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 0;">
+                                <!-- 게임 이용 행동 -->
+                                <div class="case-sub-card" style="background-color: var(--oy-coral-light); border: 1px solid rgba(255, 84, 117, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-coral); font-size: 18px; margin-bottom: 10px;">게임 이용 행동</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 15.5px; line-height: 1.7; color: var(--text-medium);">
+                                        10대 학생은 2030 직장인 대비 <strong>오프라인 지인의 영향을 더 많이 받는 특징</strong> 확인<br><br>
+                                        <span style="color: var(--text-dark); font-weight: 500;">➔ 사회적 관계 기반 이용 행동 성향 존재</span>
+                                    </p>
+                                </div>
+                                <!-- 유료 결제 동기 -->
+                                <div class="case-sub-card" style="background-color: var(--oy-green-light); border: 1px solid rgba(150, 195, 29, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-green); font-size: 18px; margin-bottom: 10px;">유료 결제 동기</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 15.5px; line-height: 1.7; color: var(--text-medium);">
+                                        <strong>10대 학생</strong> ➔ 외형 꾸미기 및 표현 욕구 중심 소비<br>
+                                        <strong>2030 직장인</strong> ➔ 효율·편의 중심 소비<br><br>
+                                        <span style="color: var(--text-dark); font-weight: 500;">➔ 세그먼트별 소비 동기 차이 확인</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Insight -->
+                    <div class="case-card">
+                        <div class="case-tag">Business Insight</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8;">
+                                대규모 조사 결과 내에서 소비자 행동 차이를 설명할 수 있는 주제를 발굴하고 별도 인사이트 리포트로 확장함<br>
+                                이를 통해 생활 패턴 기반 소비자 세분화 관점 도출
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 04 CASE 3 ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">04</span>
+                    <h2 class="section-title">Case 3 — Market Insight Report Planning & Publication</h2>
+                    <p class="section-desc">시장 데이터를 구조화하고 인사이트 중심 리포트 체계를 기획·고도화</p>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    
+                    <div class="grid-2-col" style="grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 0;">
+                        <!-- Case 1 Card -->
+                        <div class="report-card" style="padding: 30px; border-radius: 18px; border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; gap: 16px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--oy-green); background-color: var(--oy-green-light); padding: 4px 12px; border-radius: 6px; align-self: flex-start; border: 1px solid rgba(150, 195, 29, 0.3);">리포트 기획 및 운영</div>
+                            <h4 style="font-size: 20px; font-weight: 600; color: var(--text-dark);">Project 1. Market Insight Report Planning (Game)</h4>
+                            <p class="case-desc" style="font-size: 15.5px; color: var(--text-medium); line-height: 1.65; word-break: keep-all;">
+                                게임 시장 동향을 조직 내에 정기 공유하기 위한 시장 흐름을 단계적으로 이해할 수 있는 리포트 구조를 설계함
+                            </p>
+
+                            <!-- Report Framework -->
+                            <div style="background-color: var(--oy-green-light); padding: 18px; border-radius: 12px; border: 1px solid rgba(150, 195, 29, 0.15);">
+                                <span style="font-size: 13px; font-weight: 600; color: var(--oy-green); text-transform: uppercase; display: block; margin-bottom: 12px;">● 리포트 프레임워크</span>
+                                <ul style="list-style-type: none; font-size: 14.5px; color: var(--text-medium); display: flex; flex-direction: column; gap: 12px;">
+                                    <li>• <strong>Global Market:</strong> 글로벌 시장 매출 순위</li>
+                                    <li>• <strong>Domestic Market:</strong> 국내 PC / 모바일 시장 순위</li>
+                                    <li>• <strong>Deep Dive:</strong> 월별 주요 서비스 선정 및 직접 사용 기반 UX / BM 분석</li>
+                                </ul>
+                                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(150,195,29,0.3); font-size: 13.5px; font-weight: 500; color: var(--text-dark); line-height: 1.6;">
+                                    시장 → 카테고리 → 서비스 단위로<br>점진적 시장 이해 구조 설계
+                                </div>
+                            </div>
+
+                            <!-- Report Evolution -->
+                            <div style="background-color: #fafbfc; padding: 18px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                                <span style="font-size: 13px; font-weight: 600; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 8px;">● Report Evolution</span>
+                                <div style="font-size: 14.5px; color: var(--text-medium); line-height: 1.65;">
+                                    <strong>초기:</strong> 순위 데이터 중심 제공<br>
+                                    <span style="color: var(--oy-green); font-weight: bold;">↓</span><br>
+                                    <strong>고도화:</strong> 순위 변동 원인 분석 추가 / 시장 이슈 반영 / 점유율 데이터 추가
+                                </div>
+                            </div>
+
+                            <!-- Output -->
+                            <div style="background-color: #fafbfc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 14.5px; color: var(--text-medium); line-height: 1.6;">
+                                <strong>Output:</strong> 조직 내 월간 회의에서 시장 동향 및 게임 UX 인사이트 공유 자료로 활용
+                            </div>
+                        </div>
+
+                        <!-- Case 2 Card -->
+                        <div class="report-card" style="padding: 30px; border-radius: 18px; border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; gap: 16px;">
+                            <div style="font-size: 12px; font-weight: 600; color: var(--oy-coral); background-color: var(--oy-coral-light); padding: 4px 12px; border-radius: 6px; align-self: flex-start; border: 1px solid rgba(255, 84, 117, 0.25);">리포트 개선</div>
+                            <h4 style="font-size: 20px; font-weight: 600; color: var(--text-dark);">Project 2. Mobile App Usage Report</h4>
+                            <p class="case-desc" style="font-size: 15.5px; color: var(--text-medium); line-height: 1.65; word-break: keep-all;">
+                                앱 카테고리 특성과 시장 변화를 설명할 수 있는 분석 구조를 설계하고 고도화함
+                            </p>
+
+                            <!-- Report Improvement 1 -->
+                            <div style="background-color: var(--oy-coral-light); padding: 18px; border-radius: 12px; border: 1px solid rgba(255, 84, 117, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <span style="font-size: 13.5px; font-weight: 600; color: var(--oy-coral); text-transform: uppercase; display: block;">● 개선 1 : 카테고리 특성을 반영한 분석 항목 고도화</span>
+                                <p style="font-size: 14.5px; color: var(--text-medium); line-height: 1.6; word-break: keep-all;">
+                                    기존 리포트는 모든 카테고리에 동일한 분석 항목을 적용하고 있었으나, 비즈니스 특성에 따라 중요 지표가 다를 수 있음에 주목하여 게임 카테고리 내 매출 순위 섹션을 기획함
+                                </p>
+                                <div style="background-color: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 84, 117, 0.1); font-size: 14px; text-align: center; color: var(--text-medium); line-height: 1.5;">
+                                    <span style="color: var(--text-gray);">기존:</span> 이용자 수, 이용 시간 중심 분석 <br>
+                                    <span style="color: var(--oy-coral); font-weight: bold;">↓</span> <br>
+                                    <span style="color: var(--text-dark); font-weight: 600;">개선:</span> 이용자 수, 이용 시간 + 매출 순위 분석 <br>
+                                    <span style="color: var(--oy-coral); font-weight: bold;">↓</span> <br>
+                                    <span style="color: var(--text-dark); font-weight: bold; background-color: var(--oy-coral-light); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">중요 지표 추가</span>
+                                </div>
+                            </div>
+
+                            <!-- Report Improvement 2 -->
+                            <div style="background-color: var(--oy-coral-light); padding: 18px; border-radius: 12px; border: 1px solid rgba(255, 84, 117, 0.12); display: flex; flex-direction: column; gap: 10px;">
+                                <span style="font-size: 13.5px; font-weight: 600; color: var(--oy-coral); text-transform: uppercase; display: block;">● 개선 2 : 변화 추이 분석 관점 추가</span>
+                                <p style="font-size: 14.5px; color: var(--text-medium); line-height: 1.6; word-break: keep-all;">
+                                    기존 리포트는 해당 월 이용자 수만 제공하고 있어 월별 변화 흐름을 파악하기 어렵다는 점에 주목하여, 전월 이용자 수 비교 지표를 추가하는 개선안을 제안함
+                                </p>
+                                <div style="background-color: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid rgba(255, 84, 117, 0.1); font-size: 14px; text-align: center; color: var(--text-medium); line-height: 1.5;">
+                                    <span style="color: var(--text-gray);">기존:</span> 당월 이용자 수 <br>
+                                    <span style="color: var(--oy-coral); font-weight: bold;">↓</span> <br>
+                                    <span style="color: var(--text-dark); font-weight: 600;">개선:</span> 당월 이용자 수 + 전월 이용자 수 <br>
+                                    <span style="color: var(--oy-green); font-weight: bold;">↓</span> <br>
+                                    <span style="color: var(--text-dark); font-weight: bold; background-color: var(--oy-green-light); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">월간 증감 추이 비교 가능</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Insight Card at Bottom -->
+                    <div class="case-card" style="margin-top: 28px;">
+                        <div class="case-tag" style="color: var(--text-dark); border-color: #cbd5e1;">Business Insight</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-size: 17px; line-height: 1.8; font-weight: 400; color: var(--text-medium);">
+                                리포트는 일관된 분석 프레임이 안정감을 제공하기도 하지만, 시장 변화와 카테고리 특성을 반영한 구조 고도화가 중요함을 경험
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 05 GLOBAL CONSUMER INSIGHT ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">05</span>
+                    <h2 class="section-title">Global Consumer Insight</h2>
+                    <p class="section-desc">글로벌 소비자 조사와 시장 사례 분석을 통한 국가별 소비자 행동 차이와 현지화 전략 인사이트 도출</p>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    
+                    <!-- Case 1. Global User Research -->
+                    <div class="case-card">
+                        <div class="case-tag">Case 1</div>
+                        <div class="case-body">
+                            <h3 class="case-heading">글로벌 유저 대상 인게임 광고 선호도 조사</h3>
+                            <p class="case-desc" style="margin-bottom: 8px;"><strong>대상 국가:</strong> 영어권 / 러시아 / 대만</p>
+                            <p class="case-desc" style="margin-bottom: 8px;"><strong>분석 응답 수:</strong> 약 2.3만 건</p>
+                            <p class="case-desc" style="margin-bottom: 16px;"><strong>조사 목적:</strong> 인게임 광고 경험, 광고 수용도, 보상 선호 차이를 파악하여 글로벌 서비스 전략 시사점 도출</p>
+
+                            <!-- 공통 트렌드 카드를 제거하고, 대만 유저 카드 분석 정보를 Insight 단독 와이드 형태로 고도화 적용 -->
+                            <div class="case-sub-card" style="background-color: var(--oy-coral-light); border: 1px solid rgba(255, 84, 117, 0.15); border-radius: 14px; padding: 24px 28px; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; margin-top: 0;">
+                                <div>
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-coral); font-size: 18px; margin-bottom: 10px;">Insight</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 15.5px; line-height: 1.75; color: var(--text-medium); font-weight: 400; word-break: keep-all;">
+                                        광고 수용도와 광고 이후 행동을 종합적으로 분석했을 때, 대만 사용자가 서비스 내 광고에 가장 우호적인 반응을 보임<br>
+                                        광고 시청 이후 콘텐츠 탐색 및 추가 관심 행동 비중도 높게 나타남
+                                    </p>
+                                </div>
+                                <span style="font-size: 14px; font-weight: 500; color: var(--oy-coral); display: block; border-top: 1px dashed rgba(255, 84, 117, 0.2); padding-top: 8px; margin-top: 12px;">
+                                    ➔ 국가별 소비자 반응 차이 확인
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case 2. Global Market Observation -->
+                    <div class="case-card">
+                        <div class="case-tag" style="color: var(--oy-green); border-color: rgba(150, 195, 29, 0.2);">Case 2</div>
+                        <div class="case-body">
+                            <h3 class="case-heading">Case 2. Global Market Observation</h3>
+                            <p class="case-desc" style="margin-bottom: 16px;"><strong>글로벌 서비스 현지화 사례 분석</strong><br>글로벌 원빌드 방식이 아닌 국가별 별도 버전을 운영하며, 소비자 특성에 맞춰 서비스 경험을 현지화한 사례 분석</p>
+                            
+                            <div class="grid-2-col" style="grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 0;">
+                                <!-- Japan Card -->
+                                <div class="case-sub-card" style="background-color: var(--oy-green-light); border: 1px solid rgba(150, 195, 29, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-green); font-size: 18px; margin-bottom: 10px;">🇯🇵 Japan</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 16px; line-height: 1.4; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">
+                                        하드코어 이용자 중심 경험 강화
+                                    </p>
+                                    <ul style="list-style-type: none; font-size: 15px; color: var(--text-medium); display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+                                        <li>• 수집형 콘텐츠 요소 확대</li>
+                                        <li>• 캐릭터 성장 경험 강화</li>
+                                        <li>• 정보 밀도가 높은 UI 구성</li>
+                                    </ul>
+                                    <span style="font-size: 14px; font-weight: 500; color: var(--text-gray); display: block; border-top: 1px dashed rgba(150, 195, 29, 0.3); padding-top: 8px;">
+                                        → 기존 MMORPG 경험이 풍부한 하드코어 이용자 성향 반영
+                                    </span>
+                                </div>
+                                <!-- US Card -->
+                                <div class="case-sub-card" style="background-color: var(--oy-coral-light); border: 1px solid rgba(255, 84, 117, 0.15); border-radius: 14px; padding: 24px 28px;">
+                                    <h4 class="case-sub-card-title" style="color: var(--oy-coral); font-size: 18px; margin-bottom: 10px;">🇺🇸 US</h4>
+                                    <p class="case-sub-card-desc" style="font-size: 16px; line-height: 1.4; font-weight: 600; margin-bottom: 12px; color: var(--text-dark);">
+                                        진입장벽 완화 및 대중성 강화
+                                    </p>
+                                    <ul style="list-style-type: none; font-size: 15px; color: var(--text-medium); display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;">
+                                        <li>• 초기 이용 난도 완화</li>
+                                        <li>• 튜토리얼 강화</li>
+                                        <li>• 캐릭터 디자인 현지화 <br><span style="font-size: 13.5px; color: var(--text-gray); margin-left: 10px;">(여성 캐릭터 선정성 완화 / 남성 캐릭터 남성성 강화)</span></li>
+                                    </ul>
+                                    <span style="font-size: 14px; font-weight: 500; color: var(--text-gray); display: block; border-top: 1px dashed rgba(255, 84, 117, 0.2); padding-top: 8px;">
+                                        → 신규 이용자 및 대중 이용자 관점 반영
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="case-sub-card" style="margin-top: 24px; background-color: var(--oy-green-light); border-color: rgba(150, 195, 29, 0.15);">
+                                <div class="case-sub-card-title" style="color: var(--oy-green); font-size: 14px;">Insight</div>
+                                <div class="case-sub-card-desc" style="line-height: 1.6; word-break: keep-all; font-weight: 500; color: var(--text-medium); font-size: 16px;">
+                                    동일한 서비스라도 국가별 소비자 특성, 이용 성향, 기대 경험에 따라 서비스 설계 방식이 달라질 수 있음
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Key Takeaway -->
+                    <div class="case-card">
+                        <div class="case-tag" style="color: var(--text-dark); border-color: #cbd5e1;">Key Takeaway</div>
+                        <div class="case-body">
+                            <p class="case-desc" style="font-weight: 500; line-height: 1.7; color: var(--text-dark); word-break: keep-all; font-size: 16.5px;">
+                                글로벌 서비스에서는 국가별 소비자 특성과 이용 맥락 차이를 이해하는 것이 중요하며, 이를 통해 시장별 고객 경험과 현지화 전략을 설계할 수 있음
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 06 INSIGHT STORYTELLING ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">06</span>
+                    <h2 class="section-title">Strategic Communication</h2>
+                    <p class="section-desc">시장 흐름과 내부 데이터를 연결하여 프로젝트 추진 방향과 핵심 메시지 도출</p>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    <!-- Project 2 삭제 후 Project 1 단독으로 화면을 채우는 세련된 와이드 리디자인 적용 -->
+                    <div class="report-card" style="padding: 40px; border-radius: 20px; border: 1px solid rgba(226, 232, 240, 0.8); display: flex; flex-direction: column; gap: 20px; width: 100%;">
+                        <div style="font-size: 12px; font-weight: 600; color: var(--oy-green); background-color: var(--oy-green-light); padding: 4px 12px; border-radius: 6px; align-self: flex-start; border: 1px solid rgba(150, 195, 29, 0.3);">Project 1. Project Proposal Storyline Design</div>
+                        <h4 style="font-size: 22px; font-weight: 600; color: var(--text-dark); line-height: 1.4;">신규 프로젝트 제안 메시지 기획</h4>
+                        <p class="case-desc" style="font-size: 16.5px; color: var(--text-medium); line-height: 1.65; word-break: keep-all;">
+                            신규 프로젝트 제안 자료 작성 과정에서 시장 흐름과 내부 데이터를 연결해 프로젝트 추진 필요성을 설명하는 스토리라인 설계 수행
+                        </p>
+
+                        <!-- Story Structure -->
+                        <div style="background-color: var(--oy-green-light); padding: 24px; border-radius: 12px; border: 1px solid rgba(150,195,29,0.15);">
+                            <span style="font-size: 14px; font-weight: 600; color: var(--oy-green); display: block; margin-bottom: 12px;">● Story Structure</span>
+                            <div style="font-size: 15px; color: var(--text-medium); line-height: 1.65; text-align: center;">
+                                <div style="background-color: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid rgba(150,195,29,0.1); margin-bottom: 4px;">
+                                    <strong>Market Trend</strong><br><span style="font-size: 13.5px; color: var(--text-gray);">거시 시장 변화 ➔ 산업 트렌드 ➔ 시장 기회</span>
+                                </div>
+                                <span style="color: var(--oy-green); font-weight: bold; display: block; margin: 4px 0;">↓</span>
+                                <div style="background-color: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid rgba(150,195,29,0.1); margin-bottom: 4px;">
+                                    <strong>Internal Data</strong><br><span style="font-size: 13.5px; color: var(--text-gray);">내부 데이터 분석 ➔ 사업 현황</span>
+                                </div>
+                                <span style="color: var(--oy-green); font-weight: bold; display: block; margin: 4px 0;">↓</span>
+                                <div style="background-color: #ffffff; padding: 10px; border-radius: 8px; border: 1px solid rgba(150,195,29,0.1);">
+                                    <strong>Strategic Message</strong><br><span style="font-size: 13.5px; color: var(--text-gray);">프로젝트 추진 필요성 ➔ 핵심 과제 ➔ 실행 방향</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed rgba(150,195,29,0.3); font-size: 14.5px; font-weight: 500; color: var(--text-dark); text-align: center;">
+                                ➔ 시장 흐름과 내부 데이터를 연결해 프로젝트 추진 필요성을 설명하는 핵심 메시지 도출
+                            </div>
+                        </div>
+
+                        <!-- Impact -->
+                        <div style="background-color: #fafbfc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 15.5px; color: var(--text-medium); line-height: 1.65; display: flex; flex-direction: column; gap: 8px;">
+                            <span style="font-size: 13.5px; font-weight: 600; color: var(--text-gray); text-transform: uppercase;">● Impact</span>
+                            <ul style="list-style-type: none; display: flex; flex-direction: column; gap: 6px; padding-left: 0;">
+                                <li>• 해당 보고 자료를 기반으로 프로젝트 착수 의사결정 지원</li>
+                                <li>• 우수 사례로 인정받아 전사 공유 세션 진행</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 07 WHY ME / CLOSING ==================== -->
+        <section class="slide">
+            <div class="slide-layout">
+                <div class="side-headline animate-up">
+                    <span class="num-badge">07</span>
+                    <h2 class="section-title">Why Me / Closing</h2>
+                </div>
+                <div class="case-container animate-up delay-1">
+                    <div class="about-intro-hero" style="border-color: var(--oy-green); background-color: var(--oy-green-light); padding: 40px; border-radius: 20px;">
+                        <h3 style="color: var(--oy-green); font-size: 28px; font-weight: 600; margin-bottom: 20px;">Consumer Research × Market Insight × Business Impact</h3>
+                        <p class="hero-body-text" style="font-size: 19.5px; line-height: 1.8; color: var(--text-dark); word-break: keep-all; font-weight: 400;">
+                            게임, 커머스, 패션 등 다양한 산업의 데이터를 다루며 고객 행동과 시장 변화를 해석하는 경험을 쌓아왔습니다.<br><br>이종 산업을 넘나들며 축적한 시장·고객 데이터 분석 경험을 바탕으로, 소비 문화가 융합되는 환경 속에서 다양한 관점을 연결한 인사이트를 도출하고자 합니다.<br><br>앞으로는 H&B 시장 데이터를 기반으로 고객·카테고리 트렌드를 발굴하고, 조직의 의사결정을 지원하는 인사이트를 만들겠습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 08 THANK YOU ==================== -->
+        <section class="slide slide-center">
+            <div class="intro-content">
+                <h1 class="intro-title animate-up" style="font-size: 72px; font-weight: 700; letter-spacing: -2.5px; margin-bottom: 48px; color: var(--text-dark);">
+                    감사합니다
+                </h1>
+                
+                <div class="animate-up" style="font-size: 14px; color: var(--text-gray); line-height: 1.8; border-top: 1px solid #e2e8f0; padding-top: 24px; display: inline-block; min-width: 240px;">
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 17px; margin-bottom: 8px;">마경아</p>
+                    <p style="margin-bottom: 2px; font-weight: 400;">📞 010-8280-2599</p>
+                    <p style="font-weight: 400;">✉️ mka31053@naver.com</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="keyboard-guide">
+        <span>프레젠테이션 조작: </span>
+        <span class="key">▲</span>
+        <span class="key">▼</span>
+        <span class="key">Space</span>
+    </div>
+
+    <script {nonce-placeholder}>
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const progressBar = document.getElementById('progressBar');
+        
+        let currentSlideIndex = 0;
+        const totalSlides = slides.length;
+        let isTransitioning = false;
+        let wheelActive = false;
+        let wheelTimer = null;
+        let lastScrollTime = 0;
+        const scrollCooldown = 1200; // 관성 스크롤(Momentum) 보정용 Cooldown 필터 타임라인 (1.2초)
+
+        // 초기화 함수
+        function initSlides() {
+            slides.forEach((slide, idx) => {
+                if (idx === 0) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+                // 모든 슬라이드의 자체 스크롤 위치를 맨 위로 초기화
+                slide.scrollTop = 0;
+            });
+            updateUIState(0);
+        }
+
+        // 특정 슬라이드로 안전하게 전환하는 함수
+        function scrollToSlide(index) {
+            if (index < 0 || index >= totalSlides || isTransitioning) return;
+            isTransitioning = true;
+            lastScrollTime = Date.now();
+            
+            // 기존 슬라이드 비활성화 및 새 슬라이드 활성화
+            slides.forEach((slide, idx) => {
+                if (idx === index) {
+                    slide.classList.add('active');
+                    slide.scrollTop = 0; // 진입 시 항상 스크롤 맨 위로 지정
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            currentSlideIndex = index;
+            updateUIState(index);
+
+            // 트랜지션 완료 지연 잠금을 800ms로 조절
+            setTimeout(() => {
+                isTransitioning = false;
+            }, 800);
+        }
+
+        // 인디케이터 점과 프로그레스바 상태 연동
+        function updateUIState(index) {
+            dots.forEach((dot, idx) => {
+                if (idx === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+
+            const progressPercent = ((index + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+        }
+
+        // 마우스 휠 스크롤 감지 및 모멘텀 무시 UX 로직 (1장씩 매끄러운 바운딩 구현)
+        function handleWheel(e) {
+            const activeSlide = slides[currentSlideIndex];
+            
+            // 현재 활성화된 슬라이드가 실제로 내부 스크롤이 가능한 속성이고, 충분한 콘텐츠가 넘쳐나는지 계산
+            const style = window.getComputedStyle(activeSlide);
+            const overflowY = style.getPropertyValue('overflow-y');
+            const isScrollableStyle = overflowY === 'auto' || overflowY === 'scroll';
+            
+            // 데코 등으로 인한 1~2px 오차 감지 및 표지(slide-center)에서의 휠 조작이 락에 걸리지 않도록 가공
+            const canScrollInside = isScrollableStyle && 
+                                    (activeSlide.scrollHeight > activeSlide.clientHeight + 8) && 
+                                    !activeSlide.classList.contains('slide-center');
+            
+            const scrollTop = activeSlide.scrollTop;
+            const scrollHeight = activeSlide.scrollHeight;
+            const clientHeight = activeSlide.clientHeight;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 15;
+            const isAtTop = scrollTop <= 15;
+
+            const now = Date.now();
+            // Cooldown 주기 내에 전송되는 추가 휠 마이크로 모멘텀은 전면 무시 (스킵 방지 핵심)
+            if (now - lastScrollTime < scrollCooldown) {
+                e.preventDefault();
+                return;
+            }
+
+            // 관성 스크롤(Momentum)의 잔여 이벤트를 필터링하기 위한 타이머
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => {
+                wheelActive = false;
+            }, 200); // 휠 움직임 중단 200ms 감지 후 슬라이드 락 해제
+
+            if (isTransitioning) {
+                e.preventDefault();
+                return;
+            }
+
+            if (e.deltaY > 0) { // 마우스 휠 아래로 굴림
+                if (canScrollInside && !isAtBottom) {
+                    // 슬라이드 내부에 읽을 거리가 아직 아래에 남아있는 경우 -> 다음 슬라이드 이동 차단하고 내부 스크롤 수행
+                    return;
+                } else {
+                    // 내부 스크롤이 끝에 도달했거나 읽을 내용이 없는 경우 -> 다음 슬라이드로 1장만 전환
+                    if (!wheelActive && currentSlideIndex < totalSlides - 1) {
+                        e.preventDefault();
+                        wheelActive = true;
+                        scrollToSlide(currentSlideIndex + 1);
+                    } else {
+                        e.preventDefault();
+                    }
+                }
+            } else if (e.deltaY < 0) { // 마우스 휠 위로 굴림
+                if (canScrollInside && !isAtTop) {
+                    // 내부에 읽을 거리가 위쪽에 남아있는 경우 -> 위로 내부 스크롤 수행
+                    return;
+                } else {
+                    // 내부 스크롤이 맨 위에 도달했을 때 -> 이전 슬라이드로 1장만 전환
+                    if (!wheelActive && currentSlideIndex > 0) {
+                        e.preventDefault();
+                        wheelActive = true;
+                        scrollToSlide(currentSlideIndex - 1);
+                    } else {
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+
+        // 키보드, 마우스 스크롤 캡처를 window와 document 양쪽에 강력 바인딩
+        window.addEventListener('wheel', handleWheel, { passive: false });
+        document.addEventListener('wheel', handleWheel, { passive: false });
+
+        // 키보드 조작 대응 (방향키, 스페이스바 완벽 지원)
+        window.addEventListener('keydown', (e) => {
+            const activeSlide = slides[currentSlideIndex];
+            const scrollTop = activeSlide.scrollTop;
+            const scrollHeight = activeSlide.scrollHeight;
+            const clientHeight = activeSlide.clientHeight;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5;
+            const isAtTop = scrollTop <= 5;
+
+            if (e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+                if (scrollHeight > clientHeight && !isAtBottom) {
+                    // 내부 스크롤 진행되도록 기본값 위임
+                    return;
+                } else {
+                    // 전환 실행
+                    if (currentSlideIndex < totalSlides - 1) {
+                        e.preventDefault();
+                        scrollToSlide(currentSlideIndex + 1);
+                    }
+                }
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (scrollHeight > clientHeight && !isAtTop) {
+                    // 내부 상단 스크롤 위임
+                    return;
+                } else {
+                    if (currentSlideIndex > 0) {
+                        e.preventDefault();
+                        scrollToSlide(currentSlideIndex - 1);
+                    }
+                }
+            }
+        });
+
+        // 마우스 오버 시 자동 포커스 활성화 (아이프레임 클릭 없이 스크롤 전환 활성화 UX)
+        function grabFocus() {
+            if (document.activeElement !== window) {
+                window.focus();
+            }
+        }
+        window.addEventListener('mouseenter', grabFocus);
+        window.addEventListener('mouseover', grabFocus);
+        window.addEventListener('mousemove', grabFocus);
+        document.addEventListener('mouseenter', grabFocus);
+
+        // 윈도우 리사이즈 대응
+        window.addEventListener('resize', () => {
+            scrollToSlide(currentSlideIndex);
+        });
+
+        // 슬라이드 초기화 실행
+        initSlides();
+    </script>
+</body>
+</html>
